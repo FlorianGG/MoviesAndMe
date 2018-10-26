@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { ActivityIndicator, Button, FlatList, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { getFilmsFromApiWithSearchedText } from '../api/TMBDA.js';
-import FilmItem from './FilmItem';
+import FilmItem from '../components/FilmItem';
 
 export default class Search extends Component {
 	constructor(props) {

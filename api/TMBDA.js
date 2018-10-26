@@ -9,7 +9,10 @@ export function getFilmsFromApiWithSearchedText(text, page) {
 }
 
 export function getFilmDetailFromApi(id) {
-	const url = `${MAIN_URL}/movie/${id}?api_key=${API_TOKEN}&language=fr`;
+	const url = `${MAIN_URL}movie/${id}?api_key=${API_TOKEN}&language=fr`;
+	return fetch(url)
+		.then(response => response.json())
+		.catch(error => console.log(error));
 }
 
 export function getImageFromApi(name) {
