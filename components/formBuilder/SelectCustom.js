@@ -1,133 +1,237 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { FlatList, ListItem, Modal, Text, TextInput, TouchableHighlight, View } from 'react-native';
+import { Button, FlatList, ListItem, Modal, Text, TouchableHighlight, View } from 'react-native';
 import { SearchBar } from 'react-native-elements';
 
 import { FormStyles, MainStyle } from '../../styles';
 
 export default class SelectCustom extends Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			modalVisible: false,
-			options: [],
-			searchText: '',
-			error: null
-		};
-	}
+  constructor(props) {
+    super(props)
+    this.state = {
+      modalVisible: false,
+      optionsFiltered: [],
+      searchText: '',
+      valueToDisplay: null,
+      isValid: null,
+    }
+    this.allOptions = this._initializationOptions()
+  }
 
-	/**
-	 * Function qui initialise l'affichage à 25 items maximum
-	 */
-	componentDidMount() {
-		let counter = 0;
-		const options = this.props.options.filter(option => {
-			counter++;
-			return counter <= 25;
-		});
-		this.setState({ options });
-	}
+  /**
+   * On set la valeur par défaut dans le field si elle est définit
+   */
+  componentDidMount() {
+    if (this.props.defaultValue) {
+      this._selectValidator(this.props.defaultValue)
+    }
+  }
 
-	/**
-	 * Toggle la modal
-	 * @param {boolean} visible
-	 */
-	_setModalVisible(visible) {
-		this.setState({ modalVisible: visible });
-	}
+  /**
+   * Function qui initialise l'afficher avec une option null
+   */
+  _initializationOptions() {
+    return [{ id: 0, name: 'Aucune sélection' }, ...this.props.options]
+  }
 
-	/**
-	 * Fonction qui set le state searchText ainsin que les nouvelles options filtrées
-	 */
-	_searchFilterFunction = searchText => {
-		const newOptions = this.props.options.filter(option => {
-			const itemData = `${option.id}${option.name.toUpperCase()}}`;
-			const textData = searchText.toUpperCase();
-			return itemData.indexOf(textData) > -1;
-		});
-		this.setState({ searchText, options: newOptions });
-	};
+  /**
+   * Toggle la modal et réinitialise la vue
+   * @param {boolean} visible
+   */
+  _setModalVisible(visible) {
+    this.setState({
+      modalVisible: visible,
+      searchText: '',
+      optionsFiltered: [],
+    })
+  }
 
-	/**
-	 *
-	 */
-	_selectValidator = id => {
-		console.log(id);
-		this._setModalVisible(!this.state.modalVisible);
-	};
+  /**
+   * Fonction qui set le state searchText ainsi que les nouvelles options filtrées
+   */
+  _searchFilterFunction = searchText => {
+    //filtre les options selon la recherche effectuées
+    const newOptions = this.allOptions.filter(option => {
+      if (typeof option.name === 'string') {
+        const itemData = `${option.id}${option.name.toUpperCase()}`
+      } else {
+        const itemData = `${option.id}${option.name}`
+      }
+      const itemData = `${option.id}${option.name.toUpperCase()}`
+      const textData = searchText.toUpperCase()
+      return itemData.indexOf(textData) > -1
+    })
+    this.setState({ searchText, optionsFiltered: newOptions })
+  }
 
-	render() {
-		const { options } = this.state;
-		return (
-			<View style={{ marginTop: 22 }}>
-				<Modal
-					animationType="slide"
-					transparent={false}
-					visible={this.state.modalVisible}
-					onRequestClose={() => {
-						console.log('Modal has been closed.');
-						this._setModalVisible(!this.state.modalVisible);
-					}}
-				>
-					<View style={MainStyle.MainView}>
-						<SearchBar
-							placeholder="Taper votre recherche..."
-							lightTheme
-							round
-							onChangeText={text => this._searchFilterFunction(text)}
-							value={this.state.text}
-						/>
-						<FlatList
-							data={options}
-							keyExtractor={item => item.id.toString()}
-							renderItem={({ item }) => {
-								return (
-									<TouchableHighlight
-										onPress={() => {
-											this._selectValidator(item.id);
-										}}
-										style={{
-											height: 40,
-											backgroundColor: '#fff',
-											borderBottomColor: 'grey',
-											borderBottomWidth: 1,
-											padding: 5
-										}}
-									>
-										<Text
-											style={{
-												flex: 1,
-												fontSize: 16,
-												color: '#3178c2',
-												textAlign: 'left',
-												textAlignVertical: 'center',
-												fontWeight: 'bold'
-											}}
-										>
-											{item.name}
-										</Text>
-									</TouchableHighlight>
-								);
-							}}
-						/>
+  /**
+   * Fonction qui clear l'input de la searchBar et  reset les state
+   */
+  _clearSearchInput = () => {
+    this.setState({
+      searchText: '',
+      optionsFiltered: [],
+    })
+  }
 
-						<TouchableHighlight
-							onPress={() => {
-								this._setModalVisible(!this.state.modalVisible);
-							}}
-						>
-							<Text>Hide Modal</Text>
-						</TouchableHighlight>
-					</View>
-				</Modal>
+  /**
+   * Validator du selectCustom
+   */
+  _selectValidator = id => {
+    const option = this.allOptions.filter(option => {
+      return option.id === id
+    })
+    let value = {
+      name: this.props.name,
+    }
+    //on verifie qu'on a bien 1 seul résultat
+    //sinon il y a une erreur
+    if (option.length === 1) {
+      //on verifie que si le champs est requis et id = 0
+      //alors on génère une erreur
+      //sinon on valide le champs
+      if (this.props.require && id === 0) {
+        value.data = false
+        this.setState(
+          {
+            isValid: false,
+            modalVisible: this.state.modalVisible
+              ? !this.state.modalVisible
+              : this.state.modalVisible,
+            valueToDisplay: option[0].name,
+            searchText: '',
+          },
+          () => {
+            if (this.props.onChange) {
+              this.props.onChange(value)
+            }
+          }
+        )
+      } else {
+        value.data = option[0].id
+        this.setState(
+          {
+            modalVisible: this.state.modalVisible
+              ? !this.state.modalVisible
+              : this.state.modalVisible,
+            searchText: '',
+            valueToDisplay: option[0].name,
+            isValid: true,
+            searchText: '',
+          },
+          () => {
+            if (this.props.onChange) {
+              this.props.onChange(value)
+            }
+          }
+        )
+      }
+    } else {
+      value.data = false
+      this.setState(
+        {
+          isValid: false,
+          searchText: '',
+          valueToDisplay: 'Erreur sur la sélection',
+        },
+        () => {
+          if (this.props.onChange) {
+            this.props.onChange(value)
+          }
+        }
+      )
+    }
+  }
 
-				<TouchableHighlight
-					onPress={() => {
-						this._setModalVisible(true);
-					}}
-				>
-					<Text>Show Modal</Text>
-				</TouchableHighlight>
-			</View>
-		);
-	}
+  render() {
+    const { optionsFiltered, isValid, valueToDisplay } = this.state
+    return (
+      <View>
+        <Modal
+          animationType="slide"
+          transparent={false}
+          visible={this.state.modalVisible}
+          onRequestClose={() => {
+            this._setModalVisible(!this.state.modalVisible)
+          }}
+        >
+          <View style={MainStyle.MainView}>
+            <SearchBar
+              placeholder="Taper votre recherche..."
+              lightTheme
+              round
+              clearIcon={{ color: 'grey' }}
+              onClear={this._clearSearchInpu}
+              onChangeText={text => this._searchFilterFunction(text)}
+              value={this.state.text}
+            />
+            <FlatList
+              data={
+                optionsFiltered.length === 0 ? this.allOptions : optionsFiltered
+              }
+              keyExtractor={item => item.id.toString()}
+              renderItem={({ item }) => {
+                return (
+                  <TouchableHighlight
+                    onPress={() => {
+                      this._selectValidator(item.id)
+                    }}
+                    style={FormStyles.selectItemContainer}
+                  >
+                    <Text style={FormStyles.selectItemText}>{item.name}</Text>
+                  </TouchableHighlight>
+                )
+              }}
+            />
+            <Button
+              onPress={() => {
+                this._setModalVisible(!this.state.modalVisible)
+              }}
+              title="Annuler"
+              color="#dc3545"
+              accessibilityLabel="Annuler"
+            />
+          </View>
+        </Modal>
+
+        <TouchableHighlight
+          onPress={() => {
+            this._setModalVisible(true)
+          }}
+          style={
+            isValid !== null
+              ? isValid
+                ? {
+                    ...FormStyles.fieldStandard,
+                    ...FormStyles.fieldSuccess,
+                  }
+                : {
+                    ...FormStyles.fieldStandard,
+                    ...FormStyles.fieldError,
+                  }
+              : FormStyles.fieldStandard
+          }
+        >
+          <Text style={FormStyles.selectText}>
+            {valueToDisplay === null
+              ? 'Sélectionner la valeur'
+              : valueToDisplay}
+          </Text>
+        </TouchableHighlight>
+      </View>
+    )
+  }
+}
+
+SelectCustom.propTypes = {
+  name: PropTypes.string.isRequired,
+  options: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number,
+      name: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    })
+  ),
+  require: PropTypes.bool,
+  onChange: PropTypes.func,
+  defaultValue: PropTypes.number,
 }
