@@ -11,7 +11,8 @@ export const other_entry = [
 	{
 		type: 'text',
 		name: 'name',
-
+		defaultValue: 'Machine',
+		label: 'Nom',
 		require: true
 	},
 	{
@@ -27,11 +28,17 @@ export const other_entry = [
 		require: true
 	},
 	{
+		type: 'number',
+		name: 'test_number',
+		label: 'Nombre test',
+		require: true
+	},
+	{
 		type: 'select',
 		name: 'bovine_type',
 		label: 'Race',
-		require: true,
-		options: bovine_type
+		options: bovine_type,
+		require: true
 	},
 	{
 		type: 'date',

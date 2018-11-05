@@ -19,20 +19,7 @@ export default class DatePickerCustom extends Component {
 	 */
 	componentDidMount() {
 		if (this.props.defaultValue) {
-			let value = {
-				name: this.props.name
-			};
-			let date = moment(this.props.defaultValue);
-			if (date.isValid()) {
-				this.setState({ isValid: true }, () => {
-					if (this.props.onChange) {
-						value.data = date.format('DD/MM/YYYY');
-						this.props.onChange(value);
-					}
-				});
-			} else {
-				this.setState({ isValid: false });
-			}
+			this._datePickerValidator(this.props.defaultValue);
 		}
 	}
 
@@ -41,38 +28,86 @@ export default class DatePickerCustom extends Component {
 	 * @param {string} text
 	 */
 	_datePickerValidator(text) {
-		let date = moment(text);
+		let date = moment(text),
+			valueValidated = {
+				name: this.props.name
+			},
+			isValid = true;
+		const { regexValidator, functionValidator } = this.props;
+
 		if (date.isValid()) {
-			this.setState({ isValid: true }, () => {
-				const value = {
-					name: this.props.name,
-					data: date.format('DD/MM/YYYY')
-				};
-				if (this.props.onChange) {
-					this.props.onChange(value);
-				}
-			});
+			isValid = true;
+			valueValidated.data = date.format('DD/MM/YYYY');
 		} else {
-			this.setState({ isValid: false });
+			isValid = false;
+			valueValidated.data = false;
+			valueValidated.message = 'Format de date non valide';
 		}
+
+		//on test la props regex si nécessaire
+		if (isValid && regexValidator) {
+			if (regexValidator.regex.test(value)) {
+				isValid = true;
+				valueValidated.data = value;
+			} else {
+				isValid = false;
+				valueValidated.data = false;
+				if (regexValidator.message) {
+					valueValidated.message = regexValidator.message;
+				} else {
+					valueValidated.message = 'Format spécifique non valide';
+				}
+			}
+		}
+
+		//on test la props fonction de validation si nécessaire
+		if (isValid && functionValidator) {
+			const customValidator = functionValidator();
+			if (
+				typeof customValidator === 'object' ||
+				typeof customValidator.result !== 'undefined'
+			) {
+				if (customValidator.result) {
+					isValid = true;
+					valueValidated.data = value;
+				} else {
+					isValid = false;
+					valueValidated.data = false;
+					if (customValidator.message) {
+						customValidator.message = customValidator.message;
+					} else {
+						customValidator.message = 'Format spécifique non valide';
+					}
+				}
+			}
+		}
+
+		this.setState({ isValid }, () => {
+			if (this.props.onChange) {
+				this.props.onChange(valueValidated);
+			}
+		});
 	}
 
 	render() {
 		const { isValid } = this.state;
+		const { isValidated } = this.props;
 		return (
 			<View
 				style={
-					isValid !== null
-						? isValid
-							? {
-									...FormStyles.fieldStandard,
-									...FormStyles.fieldSuccess
-							  }
-							: {
-									...FormStyles.fieldStandard,
-									...FormStyles.fieldError
-							  }
-						: FormStyles.fieldStandard
+					isValidated === false && !isValid
+						? { ...FormStyles.fieldStandard, ...FormStyles.fieldError }
+						: isValid !== null
+							? isValid
+								? {
+										...FormStyles.fieldStandard,
+										...FormStyles.fieldSuccess
+								  }
+								: {
+										...FormStyles.fieldStandard,
+										...FormStyles.fieldError
+								  }
+							: FormStyles.fieldStandard
 				}
 			>
 				<DatePicker
@@ -159,5 +194,6 @@ DatePickerCustom.propTypes = {
 	},
 	placeHolderText: PropTypes.string,
 	name: PropTypes.string,
+	isValidated: PropTypes.bool,
 	onChange: PropTypes.func
 };

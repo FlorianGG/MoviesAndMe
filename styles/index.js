@@ -84,5 +84,43 @@ export const FormStyles = StyleSheet.create({
 		fontSize: 16,
 		color: '#fff',
 		textAlign: 'center'
+	},
+	selectText: {
+		color: '#fff',
+		fontSize: 16
+	},
+	selectItemContainer: {
+		height: 40,
+		backgroundColor: '#fff',
+		borderBottomColor: 'grey',
+		borderBottomWidth: 1,
+		padding: 5
+	},
+	selectItemText: {
+		flex: 1,
+		fontSize: 16,
+		color: '#3178c2',
+		textAlign: 'left',
+		textAlignVertical: 'center',
+		fontWeight: 'bold'
+	},
+	inputText: {
+		color: '#fff',
+		fontSize: 16,
+		textAlign: 'center'
+	},
+	errorText: {
+		fontSize: 16,
+		color: '#dc3545',
+		textAlign: 'center'
+	},
+	buttonForm: {
+		marginHorizontal: 30,
+		marginVertical: 10,
+		alignSelf: 'flex-end',
+		backgroundColor: '#28a745'
+	},
+	disabledButtonForm: {
+		opacity: 0.5
 	}
 });

@@ -19,24 +19,7 @@ export default class BooleanCustom extends Component {
 	 */
 	componentDidMount() {
 		if (this.props.defaultValue) {
-			let value = {
-				name: this.props.name
-			};
-			if (this.props.defaultValue === 'option1') {
-				this.setState({ option1: true }, () => {
-					if (this.props.onChange) {
-						value.data = 0;
-						this.props.onChange(value);
-					}
-				});
-			} else if (this.props.defaultValue === 'option2') {
-				this.setState({ option2: true }, () => {
-					if (this.props.onChange) {
-						value.data = 1;
-						this.props.onChange(value);
-					}
-				});
-			}
+			this._booleanValidator(this.props.defaultValue);
 		}
 	}
 
@@ -70,35 +53,38 @@ export default class BooleanCustom extends Component {
 	 * Et les renvoie si nécessaire
 	 */
 	_booleanValidator = id => {
-		let { optionChecked } = this.state;
+		let { optionChecked, option1, option2 } = this.state;
 		let value = {
 			name: this.props.name
 		};
 		if (id === 'option1') {
 			if (optionChecked !== 0) {
-				this.setState(
-					{ optionChecked: 0, option1: true, option2: false },
-					() => {
-						if (this.props.onChange) {
-							value.data = 0;
-							this.props.onChange(value);
-						}
-					}
-				);
+				optionChecked = 0;
+				option1 = true;
+				option2 = false;
+			} else {
+				optionChecked = null;
+				option1 = false;
+				option2 = false;
 			}
 		} else if (id === 'option2') {
 			if (optionChecked !== 1) {
-				this.setState(
-					{ optionChecked: 1, option1: false, option2: true },
-					() => {
-						if (this.props.onChange) {
-							value.data = 1;
-							this.props.onChange(value);
-						}
-					}
-				);
+				optionChecked = 1;
+				option1 = false;
+				option2 = true;
+			} else {
+				optionChecked = null;
+				option1 = false;
+				option2 = false;
 			}
 		}
+
+		this.setState({ optionChecked, option1, option2 }, () => {
+			if (this.props.onChange) {
+				value.data = optionChecked;
+				this.props.onChange(value);
+			}
+		});
 	};
 	render() {
 		const options = this._renderBooleanField();
