@@ -79,27 +79,30 @@ export default class TextCustom extends Component {
 	};
 
 	render() {
-		const { placeHolder, length, isValidated } = this.props;
+		const { placeHolder, length, isValidated, disabled } = this.props;
 		const { isValid, value } = this.state;
 		return (
 			<View
 				style={
-					isValidated === false && !isValid
-						? { ...FormStyles.fieldStandard, ...FormStyles.fieldError }
-						: isValid !== null
-							? isValid
-								? {
-										...FormStyles.fieldStandard,
-										...FormStyles.fieldSuccess
-								  }
-								: {
-										...FormStyles.fieldStandard,
-										...FormStyles.fieldError
-								  }
-							: FormStyles.fieldStandard
+					disabled
+						? { ...FormStyles.fieldStandard, ...FormStyles.fieldDisabled }
+						: isValidated === false && !isValid
+							? { ...FormStyles.fieldStandard, ...FormStyles.fieldError }
+							: isValid !== null
+								? isValid
+									? {
+											...FormStyles.fieldStandard,
+											...FormStyles.fieldSuccess
+									  }
+									: {
+											...FormStyles.fieldStandard,
+											...FormStyles.fieldError
+									  }
+								: FormStyles.fieldStandard
 				}
 			>
 				<TextInput
+					editable={!disabled}
 					placeholder={placeHolder}
 					maxLength={length ? length : 255}
 					placeholderTextColor={'#fff'}
@@ -124,5 +127,6 @@ TextCustom.propTypes = {
 		regex: PropTypes.instanceOf(RegExp).isRequired,
 		message: PropTypes.string
 	}),
-	functionValidator: PropTypes.func
+	functionValidator: PropTypes.func,
+	disabled: PropTypes.bool
 };

@@ -88,18 +88,31 @@ export default class BooleanCustom extends Component {
 	};
 	render() {
 		const options = this._renderBooleanField();
+		const { name, disabled } = this.props;
 		return (
-			<View style={FormStyles.booleanField} name={this.props.name}>
+			<View style={FormStyles.booleanField} name={name}>
 				{options.map(option => {
 					return (
 						<TouchableOpacity
+							disabled={disabled}
 							style={
-								this.state[option.id]
-									? {
-											...FormStyles.booleanInactive,
-											...FormStyles.booleanActive
-									  }
-									: FormStyles.booleanInactive
+								disabled
+									? this.state[option.id]
+										? {
+												...FormStyles.booleanInactive,
+												...FormStyles.booleanActive,
+												...FormStyles.booleanDisabled
+										  }
+										: {
+												...FormStyles.booleanInactive,
+												...FormStyles.booleanDisabled
+										  }
+									: this.state[option.id]
+										? {
+												...FormStyles.booleanInactive,
+												...FormStyles.booleanActive
+										  }
+										: FormStyles.booleanInactive
 							}
 							onPress={() => this._booleanValidator(option.id)}
 							key={option.id}
@@ -122,5 +135,6 @@ BooleanCustom.propTypes = {
 		})
 	]).isRequired,
 	name: PropTypes.string.isRequired,
-	defaultValue: PropTypes.oneOf(['option1', 'option2'])
+	defaultValue: PropTypes.oneOf(['option1', 'option2']),
+	disabled: PropTypes.bool
 };

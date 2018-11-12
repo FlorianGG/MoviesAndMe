@@ -25,9 +25,13 @@ export const FormStyles = StyleSheet.create({
 		height: 60,
 		backgroundColor: '#3178c2',
 		borderWidth: 2,
-		borderColor: '#0f3d6d',
+		borderColor: '#13506f',
 		justifyContent: 'center',
 		alignItems: 'center'
+	},
+	fieldDisabled: {
+		backgroundColor: '#346598',
+		opacity: 0.65
 	},
 	fieldSuccess: {
 		borderColor: '#28a745'
@@ -79,6 +83,9 @@ export const FormStyles = StyleSheet.create({
 	booleanActive: {
 		backgroundColor: '#013e7e',
 		borderColor: '#de7022'
+	},
+	booleanDisabled: {
+		opacity: 0.65
 	},
 	booleanText: {
 		fontSize: 16,

@@ -2,48 +2,35 @@ import { bovine_type } from './options';
 
 export const other_entry = [
 	{
-		type: 'text',
-		name: 'national_number',
-		label: 'Numéro national',
-		high_rank: true,
-		require: true
-	},
-	{
-		type: 'text',
-		name: 'name',
-		defaultValue: 'Machine',
-		label: 'Nom',
-		require: true
-	},
-	{
-		type: 'boolean',
-		name: 'gender',
-		label: 'Sexe',
-		require: true
-	},
-	{
-		type: 'text',
-		name: 'work_ref',
-		label: 'N° travail',
-		require: true
-	},
-	{
-		type: 'number',
-		name: 'test_number',
-		label: 'Nombre test',
-		require: true
-	},
-	{
-		type: 'select',
-		name: 'bovine_type',
-		label: 'Race',
-		options: bovine_type,
-		require: true
-	},
-	{
-		type: 'date',
-		name: 'birth_date',
-		label: 'Date de Naissance',
+		type: 'listDetailled',
+		name: 'mother_name',
+		label: 'Nom de la mère',
+		detailsTopDisplay: [
+			{
+				name: 'national_number',
+				label: 'Référence nationale',
+				type: 'text'
+			},
+			{
+				name: 'work_ref',
+				label: 'N° de travail',
+				type: 'text'
+			},
+			{
+				name: 'cow_type_code',
+				label: 'Code racial',
+				type: 'text'
+			},
+			{
+				name: 'is_pregnant',
+				label: 'Gestante',
+				type: 'boolean',
+				options: {
+					option1: 'test',
+					option2: 'test'
+				}
+			}
+		],
 		require: true
 	}
 ];

@@ -7,6 +7,8 @@ import { FormStyles, MainStyle } from '../../styles';
 import BooleanCustom from './BooleanCustom';
 import DatePickerCustom from './DatePickerCustom';
 import Label from './Label';
+import ListeDetailled from './ListDetailled';
+import listDetailled from './ListDetailled';
 import NumberCustom from './NumberCustom';
 import SelectCustom from './SelectCustom';
 import TextCustom from './TextCustom';
@@ -72,6 +74,7 @@ export default class FormBuilder extends Component {
 			case 'text':
 				return (
 					<TextCustom
+						disabled={field.disabled}
 						isValidated={isValidated[field.name]}
 						name={field.name}
 						placeHolder={field.label ? field.label : undefined}
@@ -91,6 +94,7 @@ export default class FormBuilder extends Component {
 			case 'number':
 				return (
 					<NumberCustom
+						disabled={field.disabled}
 						isValidated={isValidated[field.name]}
 						name={field.name}
 						placeHolder={field.label ? field.label : undefined}
@@ -113,6 +117,7 @@ export default class FormBuilder extends Component {
 			case 'date':
 				return (
 					<DatePickerCustom
+						disabled={field.disabled}
 						isValidated={isValidated[field.name]}
 						name={field.name}
 						placeHolder={field.label ? field.label : false}
@@ -127,6 +132,7 @@ export default class FormBuilder extends Component {
 			case 'boolean':
 				return (
 					<BooleanCustom
+						disabled={field.disabled}
 						isValidated={isValidated[field.name]}
 						name={field.name}
 						options={'gender'}
@@ -138,8 +144,22 @@ export default class FormBuilder extends Component {
 			case 'select':
 				return (
 					<SelectCustom
+						disabled={field.disabled}
 						isValidated={isValidated[field.name]}
 						options={field.options}
+						name={field.name}
+						defaultValue={field.defaultValue ? field.defaultValue : undefined}
+						onChange={this._getFieldValue}
+						require={field.require ? true : false}
+					/>
+				);
+				break;
+			case 'listDetailled':
+				return (
+					<ListeDetailled
+						disabled={field.disabled}
+						isValidated={isValidated[field.name]}
+						detailsTopDisplay={field.detailsTopDisplay}
 						name={field.name}
 						defaultValue={field.defaultValue ? field.defaultValue : undefined}
 						onChange={this._getFieldValue}
@@ -206,7 +226,8 @@ FormBuilder.propTypes = {
 				'date',
 				'longText',
 				'boolean',
-				'select'
+				'select',
+				'listDetailled'
 			]).isRequired,
 			name: PropTypes.string.isRequired,
 			label: PropTypes.string,
@@ -220,7 +241,8 @@ FormBuilder.propTypes = {
 				regex: PropTypes.instanceOf(RegExp).isRequired,
 				message: PropTypes.string
 			}),
-			functionValidator: PropTypes.func
+			functionValidator: PropTypes.func,
+			disabled: PropTypes.bool
 		})
 	).isRequired
 };

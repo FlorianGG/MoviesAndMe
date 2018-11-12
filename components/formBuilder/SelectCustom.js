@@ -131,7 +131,7 @@ export default class SelectCustom extends Component {
 
 	render() {
 		const { optionsFiltered, isValid, valueToDisplay } = this.state;
-		const { isValidated } = this.props;
+		const { isValidated, disabled } = this.props;
 		return (
 			<View>
 				<Modal
@@ -185,20 +185,23 @@ export default class SelectCustom extends Component {
 					onPress={() => {
 						this._setModalVisible(true);
 					}}
+					disabled={disabled}
 					style={
-						isValidated === false && !isValid
-							? { ...FormStyles.fieldStandard, ...FormStyles.fieldError }
-							: isValid !== null
-								? isValid
-									? {
-											...FormStyles.fieldStandard,
-											...FormStyles.fieldSuccess
-									  }
-									: {
-											...FormStyles.fieldStandard,
-											...FormStyles.fieldError
-									  }
-								: FormStyles.fieldStandard
+						disabled
+							? { ...FormStyles.fieldStandard, ...FormStyles.fieldDisabled }
+							: isValidated === false && !isValid
+								? { ...FormStyles.fieldStandard, ...FormStyles.fieldError }
+								: isValid !== null
+									? isValid
+										? {
+												...FormStyles.fieldStandard,
+												...FormStyles.fieldSuccess
+										  }
+										: {
+												...FormStyles.fieldStandard,
+												...FormStyles.fieldError
+										  }
+									: FormStyles.fieldStandard
 					}
 				>
 					<Text style={FormStyles.selectText}>
@@ -223,5 +226,6 @@ SelectCustom.propTypes = {
 	),
 	require: PropTypes.bool,
 	onChange: PropTypes.func,
-	defaultValue: PropTypes.number
+	defaultValue: PropTypes.number,
+	disabled: PropTypes.bool
 };

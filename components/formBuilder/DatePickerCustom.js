@@ -91,23 +91,25 @@ export default class DatePickerCustom extends Component {
 
 	render() {
 		const { isValid } = this.state;
-		const { isValidated } = this.props;
+		const { isValidated, disabled } = this.props;
 		return (
 			<View
 				style={
-					isValidated === false && !isValid
-						? { ...FormStyles.fieldStandard, ...FormStyles.fieldError }
-						: isValid !== null
-							? isValid
-								? {
-										...FormStyles.fieldStandard,
-										...FormStyles.fieldSuccess
-								  }
-								: {
-										...FormStyles.fieldStandard,
-										...FormStyles.fieldError
-								  }
-							: FormStyles.fieldStandard
+					disabled
+						? { ...FormStyles.fieldStandard, ...FormStyles.fieldDisabled }
+						: isValidated === false && !isValid
+							? { ...FormStyles.fieldStandard, ...FormStyles.fieldError }
+							: isValid !== null
+								? isValid
+									? {
+											...FormStyles.fieldStandard,
+											...FormStyles.fieldSuccess
+									  }
+									: {
+											...FormStyles.fieldStandard,
+											...FormStyles.fieldError
+									  }
+								: FormStyles.fieldStandard
 				}
 			>
 				<DatePicker
@@ -195,5 +197,6 @@ DatePickerCustom.propTypes = {
 	placeHolderText: PropTypes.string,
 	name: PropTypes.string,
 	isValidated: PropTypes.bool,
-	onChange: PropTypes.func
+	onChange: PropTypes.func,
+	disabled: PropTypes.bool
 };

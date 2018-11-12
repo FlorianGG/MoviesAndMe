@@ -35,7 +35,7 @@ export default class NumberCustom extends Component {
 			},
 			isValid = true;
 
-		value = value.replace(/\,/, '.');
+		value = value.toString().replace(/\,/, '.');
 		//on test si on a bien un nombre
 		// si c'est un decimal ou non
 		if (decimal) {
@@ -116,27 +116,30 @@ export default class NumberCustom extends Component {
 	};
 
 	render() {
-		const { placeHolder, length, isValidated } = this.props;
+		const { placeHolder, length, isValidated, disabled } = this.props;
 		const { isValid, value } = this.state;
 		return (
 			<View
 				style={
-					isValidated === false && !isValid
-						? { ...FormStyles.fieldStandard, ...FormStyles.fieldError }
-						: isValid !== null
-							? isValid
-								? {
-										...FormStyles.fieldStandard,
-										...FormStyles.fieldSuccess
-								  }
-								: {
-										...FormStyles.fieldStandard,
-										...FormStyles.fieldError
-								  }
-							: FormStyles.fieldStandard
+					disabled
+						? { ...FormStyles.fieldStandard, ...FormStyles.fieldDisabled }
+						: isValidated === false && !isValid
+							? { ...FormStyles.fieldStandard, ...FormStyles.fieldError }
+							: isValid !== null
+								? isValid
+									? {
+											...FormStyles.fieldStandard,
+											...FormStyles.fieldSuccess
+									  }
+									: {
+											...FormStyles.fieldStandard,
+											...FormStyles.fieldError
+									  }
+								: FormStyles.fieldStandard
 				}
 			>
 				<TextInput
+					editable={!disabled}
 					placeholder={placeHolder}
 					placeholderTextColor={'#fff'}
 					maxLength={length ? length : 255}
@@ -165,5 +168,6 @@ NumberCustom.propTypes = {
 		regex: PropTypes.instanceOf(RegExp).isRequired,
 		message: PropTypes.string
 	}),
-	functionValidator: PropTypes.func
+	functionValidator: PropTypes.func,
+	disabled: PropTypes.bool
 };
